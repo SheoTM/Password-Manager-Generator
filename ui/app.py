@@ -7,7 +7,7 @@ import os
 class PasswordManagerApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Password Manager&Generator")
+        self.root.title("Password Manager & Generator")
         self.password_manager = None
 
         # Account selection screen
@@ -18,9 +18,10 @@ class PasswordManagerApp:
         tk.Button(self.account_frame, text="Register Account", command=self.show_create_account).grid(row=0, column=1, padx=10)
 
     def show_login(self):
+        # Transition to login screen
         self.account_frame.pack_forget()
 
-        # Create login frame
+        # Create login form
         self.login_frame = tk.Frame(self.root)
         self.login_frame.pack(pady=20)
 
@@ -36,9 +37,10 @@ class PasswordManagerApp:
         tk.Button(self.login_frame, text="Back", command=self.show_account_choice).grid(row=3, column=0, columnspan=2, pady=10)
 
     def show_create_account(self):
+        # Transition to account creation screen
         self.account_frame.pack_forget()
 
-        # Create account creation frame
+        # Create registration form
         self.create_account_frame = tk.Frame(self.root)
         self.create_account_frame.pack(pady=20)
 
@@ -54,7 +56,7 @@ class PasswordManagerApp:
         tk.Button(self.create_account_frame, text="Back", command=self.show_account_choice).grid(row=3, column=0, columnspan=2, pady=10)
 
     def show_account_choice(self):
-        # Clear frames
+        # Return to account selection screen
         if hasattr(self, 'login_frame'):
             self.login_frame.pack_forget()
         if hasattr(self, 'create_account_frame'):
@@ -65,6 +67,7 @@ class PasswordManagerApp:
         self.account_frame.pack(pady=20)
 
     def login(self):
+        # Login the user
         account_name = self.account_name_entry.get()
         master_password = self.master_password_entry.get()
 
@@ -72,15 +75,18 @@ class PasswordManagerApp:
             messagebox.showerror("Error", "Enter account name and password!")
             return
 
+        # Create PasswordManager object
         self.password_manager = PasswordManager(account_name, master_password)
         if not self.password_manager.load_passwords():
             messagebox.showerror("Error", "Account does not exist or incorrect password!")
             return
 
+        # Transition to main menu after successful login
         self.login_frame.pack_forget()
         self.show_main_menu()
 
     def create_account(self):
+        # Register a new user
         account_name = self.new_account_name_entry.get()
         master_password = self.new_master_password_entry.get()
 
@@ -88,18 +94,22 @@ class PasswordManagerApp:
             messagebox.showerror("Error", "Enter account name and password!")
             return
 
+        # Check if the account already exists
         if os.path.exists(f"passwords_{account_name}.enc"):
             messagebox.showerror("Error", "Account already exists!")
             return
 
+        # Create a new PasswordManager object and save the initial state
         self.password_manager = PasswordManager(account_name, master_password)
         self.password_manager.save_passwords()
 
+        # Notify the user and return to the account selection screen
         messagebox.showinfo("Success", "Account created successfully!")
         self.create_account_frame.pack_forget()
         self.show_account_choice()
 
     def show_main_menu(self):
+        # Display the main menu
         self.main_frame = tk.Frame(self.root)
         self.main_frame.pack(pady=20)
 
@@ -110,6 +120,7 @@ class PasswordManagerApp:
         tk.Button(self.main_frame, text="Logout", command=self.logout).pack(pady=5)
 
     def generate_and_save_password(self):
+        # Generate a new password and save it
         platform = simpledialog.askstring("Platform", "Enter platform name (e.g., Gmail):")
         if not platform:
             return
@@ -123,10 +134,12 @@ class PasswordManagerApp:
         password = generate_password(length, use_symbols, use_digits, use_uppercase)
         messagebox.showinfo("Generated Password", f"Your password: {password}")
 
+        # Save the password
         self.password_manager.add_password(platform, password)
         messagebox.showinfo("Success", f"Password for {platform} saved!")
 
     def show_passwords(self):
+        # Display all saved passwords
         passwords = self.password_manager.passwords
         if not passwords:
             messagebox.showinfo("No Passwords", "No passwords saved.")
@@ -144,6 +157,7 @@ class PasswordManagerApp:
             tk.Button(dialog, text="Close", command=dialog.destroy).pack(pady=5)
 
     def export_passwords(self):
+        # Export passwords to a file
         filename = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
         if filename:
             export_password = simpledialog.askstring("Password", "Enter password to encrypt the file:", show="*")
@@ -154,6 +168,7 @@ class PasswordManagerApp:
                 messagebox.showerror("Error", "You must enter a password to encrypt!")
 
     def import_passwords(self):
+        # Import passwords from a file
         filename = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
         if filename:
             import_password = simpledialog.askstring("Password", "Enter password to decrypt the file:", show="*")
@@ -167,6 +182,7 @@ class PasswordManagerApp:
                 messagebox.showerror("Error", "You must enter a password to decrypt the file!")
 
     def logout(self):
+        # Log out and return to the account selection screen
         self.main_frame.pack_forget()
         self.account_frame.pack(pady=20)
         self.password_manager = None
