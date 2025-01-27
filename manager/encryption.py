@@ -20,3 +20,15 @@ def encrypt_data(key, data):
 
 def decrypt_data(key, encrypted_data):
     return Fernet(key).decrypt(encrypted_data).decode()
+
+# password = "my_password"
+# data = "This is my password, do not tell anyone."
+#
+# key = generate_key_from_password(password)
+# print(f"Generated Key: {key}")
+#
+# encrypted_data = encrypt_data(key, data)
+# print(f"Encrypted Data: {encrypted_data}")
+#
+# decrypted_data = decrypt_data(key, encrypted_data)
+# print(f"Decrypted Data: {decrypted_data}")
