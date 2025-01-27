@@ -6,13 +6,13 @@ from cryptography.hazmat.primitives import hashes
 SALT = b"salt_solid"
 
 def generate_key_from_password(password):
-    kdf = PBKDF2HMAC(
+    key = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=SALT,
-        iterations=100000,
+        iterations=1_000_000,
     )
-    return base64.urlsafe_b64encode(kdf.derive(password.encode()))
+    return base64.urlsafe_b64encode(key.derive(password.encode()))
 
 def encrypt_data(key, data):
     return Fernet(key).encrypt(data.encode())
